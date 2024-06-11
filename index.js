@@ -1,17 +1,15 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
-const fatQuery = require("./fatQuery.js");
+const plugQuery = require("./queries/plugQuery");
 const mysql = require("mysql2/promise");
-//rentrer le bordel csv en js
 
-let content = fs.readFileSync("gros-data12.csv", "utf8");
+const content = fs.readFileSync("gros-data12.csv", "utf8");
 
 const rows = content.split("\n");
 
 const createDB = async () => {
   try {
-    // Create a specific connection to the database
     const databaseClient = await mysql.createConnection({
       host: "localhost",
       port: "3306",
@@ -27,23 +25,21 @@ const createDB = async () => {
     // await databaseClient.query("DROP TABLE my_test_fat_table");
 
     // // Execute the SQL statements to update the database schema
-    await databaseClient.query(fatQuery);
+    await databaseClient.query(plugQuery);
 
-    // await databaseClient.query(
-    //   `INSERT INTO nom_table VALUES (${})`,
-    // );
     async function insert(col) {
-      await databaseClient.query(`INSERT INTO my_test_fat_table VALUES (${col})`);
+      await databaseClient.query(`INSERT INTO plugQuery VALUES (${col})`);
     }
 
-    rows.forEach((row) => {
-      const cols = row
-        .split(";")
-        .map((el) => el.replace(/"/g, " "))
-        .map((el, i) => (i == 0 ? (el = 0) : `"${el}"`));
+    // rows.forEach((row) => {
+    //   const cols = row
+    //     .split(";")
+    //     .map((el) => el.replace(/"/g, " "))
+    //     .map((el, i) => (i == 0 ? (el = 0) : `"${el}"`));
 
-      insert(cols);
-    });
+    //   insert(cols);
+    // });
+
     // Close the database connection
     databaseClient.end();
 
